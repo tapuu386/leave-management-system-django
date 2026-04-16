@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block page_title %}My Leave History{% endblock %}
+{% block content %}
+<div class="page-header"><h2>📅 My Leave History</h2><p>Approved leave records by month</p></div>
+<div class="card mb-4">
+  <div class="card-body" style="padding:16px 24px">
+    <form method="get" style="display:flex;align-items:center;gap:16px">
+      <label class="form-label mb-0"><strong>Select Month:</strong></label>
+      <input type="month" name="month" value="{{ month }}" class="form-control" style="width:200px">
+      <button type="submit" class="btn-primary-custom">Filter</button>
+    </form>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header">
+    <i class="fa fa-history" style="color:var(--primary)"></i> Approved Leaves — {{ month }}
+    <span style="margin-left:auto;font-size:.8rem;color:var(--muted)">{{ leaves|length }} record(s)</span>
+  </div>
+  <div class="card-body p-0">
+    {% if leaves %}
+    <table class="table-clean">
+      <thead><tr><th>Leave Type</th><th>From</th><th>To</th><th>Days</th><th>Purpose</th><th>Approved By</th></tr></thead>
+      <tbody>
+      {% for l in leaves %}
+      <tr>
+        <td><span class="badge-status badge-{{ l.leave_type|lower }}">{{ l.get_leave_type_display }}</span></td>
+        <td>{{ l.date_from|date:"d M Y" }}</td>
+        <td>{{ l.date_to|date:"d M Y" }}</td>
+        <td><strong>{{ l.total_days }}</strong></td>
+        <td style="font-size:.8rem">{{ l.purpose|truncatechars:60 }}</td>
+        <td style="font-size:.8rem">{{ l.approved_by.emp_name|default:"-" }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div style="padding:60px;text-align:center;color:var(--muted)">
+      <i class="fa fa-calendar-xmark fa-3x" style="color:#ddd;margin-bottom:16px"></i>
+      <p>No approved leaves found for {{ month }}</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

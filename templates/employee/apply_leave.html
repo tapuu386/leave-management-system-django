@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block page_title %}Apply Leave{% endblock %}
+{% block extra_js %}
+<script>
+function calcDays() {
+  const df = document.getElementById('date_from').value;
+  const dt = document.getElementById('date_to').value;
+  const lt = document.getElementById('leave_type').value;
+  if (df && dt) {
+    const d1 = new Date(df), d2 = new Date(dt);
+    let diff = Math.floor((d2 - d1) / (1000*60*60*24)) + 1;
+    if (diff < 0) diff = 0;
+    if (lt === 'FIRST_HALF' || lt === 'SECOND_HALF') diff = diff * 0.5;
+    document.getElementById('total_days').value = diff;
+  }
+}
+function toggleDoc() {
+  const lt = document.getElementById('leave_type').value;
+  const sec = document.getElementById('doc_section');
+  const inp = document.getElementById('doc_input');
+  sec.style.display = lt === 'ML' ? 'block' : 'none';
+  inp.required = (lt === 'ML');
+  calcDays();
+}
+window.addEventListener('DOMContentLoaded', function() {
+  toggleDoc();
+});
+</script>
+{% endblock %}
+{% block content %}
+<div class="page-header"><h2>📝 Apply Leave</h2><p>Fill in the details to apply for leave</p></div>
+<div class="row justify-content-center"><div class="col-md-8">
+<div class="card">
+  <div class="card-header"><i class="fa fa-paper-plane" style="color:var(--primary)"></i> Leave Application Form</div>
+  <div class="card-body">
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Employee Name</label>
+          <input type="text" class="form-control" value="{{ emp.emp_name }}" disabled>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Employee Code</label>
+          <input type="text" class="form-control" value="{{ emp.emp_code }}" disabled>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Department</label>
+          <input type="text" class="form-control" value="{{ emp.department|default:'N/A' }}" disabled>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Designation</label>
+          <input type="text" class="form-control" value="{{ emp.designation }}" disabled>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Leave Type *</label>
+          <select name="leave_type" id="leave_type" class="form-select" required onchange="toggleDoc()">
+            <option value="">-- Select --</option>
+            <option value="FULL_LEAVE">Full Leave</option>
+            <option value="FIRST_HALF">First Half</option>
+            <option value="SECOND_HALF">Second Half</option>
+            <option value="ML">Medical Leave</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Date From *</label>
+          <input type="date" name="date_from" id="date_from" class="form-control" required onchange="calcDays()">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Date To *</label>
+          <input type="date" name="date_to" id="date_to" class="form-control" required onchange="calcDays()">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Total Days</label>
+          <input type="number" id="total_days" name="total_days" step="0.5" class="form-control" readonly style="background:#f8f7ff;font-weight:700;color:var(--primary)">
+        </div>
+        <div id="doc_section" class="col-12" style="display:none">
+          <label class="form-label">Medical Document <span style="color:var(--accent)">*</span></label>
+          <input type="file" name="medical_document" id="doc_input" class="form-control">
+          <small style="color:var(--muted)">Required for Medical Leave — All file formats supported</small>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Purpose *</label>
+          <textarea name="purpose" class="form-control" rows="3" placeholder="Reason for leave..." required></textarea>
+        </div>
+        <div class="col-12">
+          <div style="background:#ede9ff;border-radius:10px;padding:12px 16px;font-size:.82rem;color:var(--primary)">
+            <i class="fa fa-info-circle"></i> Your leave request will be sent to your department head and manager for approval.
+          </div>
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn-primary-custom"><i class="fa fa-paper-plane"></i> Submit Application</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+</div></div>
+{% endblock %}

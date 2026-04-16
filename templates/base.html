@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Leave System{% endblock %}</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+:root{
+  --primary:#1a35b8;--primary-dark:#0f1f6e;--primary-light:#e8eeff;
+  --accent:#FF6B6B;--accent2:#FFD93D;--accent3:#6BCB77;
+  --bg:#f0f4ff;--sidebar-text:#a8c4ff;
+  --card-bg:#fff;--text:#0f1f6e;--muted:#6b7fa8;
+  --border:#dae4f7;--shadow:0 4px 24px rgba(26,53,184,.10);
+  --radius:16px;--radius-sm:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+
+/* SIDEBAR */
+.sidebar{width:260px;min-height:100vh;background:linear-gradient(180deg,#0f1f6e 0%,#1a35b8 60%,#1565c0 100%);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;transition:.3s;box-shadow:4px 0 24px rgba(15,31,110,.25)}
+.sidebar-brand{padding:28px 16px 22px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;flex-direction:column;align-items:center;text-align:center}
+.sidebar-brand .logo-wrap{width:72px;height:72px;border-radius:50%;background:whitesmoke;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;margin-bottom:12px;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.sidebar-brand .logo-wrap img{width:54px;height:54px;object-fit:contain;filter:brightness(1.15) drop-shadow(0 2px 6px rgba(41,198,240,.35))}
+.sidebar-brand h4{color:#fff;font-weight:700;font-size:1rem;margin:0;letter-spacing:.2px}
+.sidebar-brand small{color:rgba(255,255,255,.5);font-size:.7rem;margin-top:2px}
+.sidebar-user{padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:12px}
+.sidebar-user .avatar{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.85rem;flex-shrink:0}
+.sidebar-user .user-info{overflow:hidden}
+.sidebar-user .user-name{color:#fff;font-weight:600;font-size:.83rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-user .user-role{color:rgba(255,255,255,.5);font-size:.7rem}
+.sidebar-nav{flex:1;padding:14px 0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(126,184,255,.35) transparent}
+.sidebar-nav::-webkit-scrollbar{width:4px}
+.sidebar-nav::-webkit-scrollbar-track{background:transparent}
+.sidebar-nav::-webkit-scrollbar-thumb{background:rgba(126,184,255,.35);border-radius:99px;transition:.3s}
+.sidebar-nav::-webkit-scrollbar-thumb:hover{background:rgba(126,184,255,.7)}
+.nav-section-title{padding:8px 20px 4px;font-size:.62rem;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,.3);text-transform:uppercase}
+.sidebar-nav a{display:flex;align-items:center;gap:11px;padding:10px 20px;color:rgba(168,196,255,.85);text-decoration:none;font-size:.845rem;font-weight:500;transition:.2s;border-left:3px solid transparent;margin:1px 8px 1px 0;border-radius:0 8px 8px 0}
+.sidebar-nav a:hover,.sidebar-nav a.active{color:#fff;background:rgba(255,255,255,.14);border-left-color:#7eb8ff}
+.sidebar-nav a i{width:16px;text-align:center;font-size:.85rem}
+.sidebar-bottom{padding:14px 20px;border-top:1px solid rgba(255,255,255,.1)}
+.sidebar-bottom a{display:flex;align-items:center;gap:10px;color:rgba(168,196,255,.75);text-decoration:none;font-size:.83rem;padding:8px 0;transition:.2s}
+.sidebar-bottom a:hover{color:#fff}
+
+/* MAIN CONTENT */
+.main-content{margin-left:260px;flex:1;min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:#fff;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;box-shadow:0 2px 12px rgba(108,71,255,.06)}
+.topbar-title{font-size:1.1rem;font-weight:700;color:var(--text)}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.btn-icon{width:38px;height:38px;border:1.5px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--muted);background:#fff;cursor:pointer;transition:.2s}
+.btn-icon:hover{border-color:var(--primary);color:var(--primary)}
+.content-area{padding:28px 32px;flex:1}
+
+/* STAT CARDS */
+.stat-card{background:var(--card-bg);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);border:1px solid var(--border);transition:.25s;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--accent))}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(108,71,255,.15)}
+.stat-card .stat-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:16px}
+.stat-card .stat-num{font-size:2rem;font-weight:800;color:var(--text);line-height:1}
+.stat-card .stat-label{font-size:.8rem;color:var(--muted);font-weight:500;margin-top:6px}
+.stat-card .stat-change{font-size:.75rem;margin-top:8px}
+
+/* CARDS */
+.card{border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);background:var(--card-bg)}
+.card-header{background:transparent;border-bottom:1px solid var(--border);padding:18px 24px;font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:10px}
+.card-body{padding:20px 24px}
+
+/* TABLES */
+.table-clean{width:100%;border-collapse:collapse}
+.table-clean thead th{background:#f8f7ff;color:var(--muted);font-size:.75rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:12px 16px;border-bottom:2px solid var(--border)}
+.table-clean tbody td{padding:13px 16px;border-bottom:1px solid var(--border);font-size:.875rem;vertical-align:middle}
+.table-clean tbody tr:hover{background:#faf9ff}
+.table-clean tbody tr:last-child td{border-bottom:none}
+
+/* BADGES */
+.badge-status{padding:5px 12px;border-radius:20px;font-size:.72rem;font-weight:600;letter-spacing:.3px}
+.badge-pending{background:#fff3cd;color:#856404}
+.badge-approved{background:#d1e7dd;color:#0a5c36}
+.badge-rejected{background:#f8d7da;color:#842029}
+.badge-cancelled{background:#e9ecef;color:#495057}
+.badge-cl{background:#e8f4fd;color:#1565c0}
+.badge-ml{background:#fce4ec;color:#c62828}
+.badge-sl{background:#e8f5e9;color:#2e7d32}
+.badge-el{background:#fff8e1;color:#f57f17}
+.badge-ol{background:#f3e5f5;color:#6a1b9a}
+
+/* FORMS */
+.form-control,.form-select{border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;font-size:.875rem;transition:.2s;background:#fff}
+.form-control:focus,.form-select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(108,71,255,.12);outline:none}
+.form-label{font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:6px}
+.form-group{margin-bottom:18px}
+
+/* BUTTONS */
+.btn-primary-custom{background:var(--primary);color:#fff;border:none;border-radius:var(--radius-sm);padding:10px 24px;font-weight:600;font-size:.875rem;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary-custom:hover{background:var(--primary-dark);transform:translateY(-1px)}
+.btn-success-custom{background:var(--accent3);color:#fff;border:none;border-radius:var(--radius-sm);padding:8px 18px;font-weight:600;font-size:.8rem;cursor:pointer;transition:.2s}
+.btn-danger-custom{background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);padding:8px 18px;font-weight:600;font-size:.8rem;cursor:pointer;transition:.2s}
+.btn-outline-custom{background:transparent;color:var(--primary);border:1.5px solid var(--primary);border-radius:var(--radius-sm);padding:8px 18px;font-weight:600;font-size:.8rem;cursor:pointer;transition:.2s}
+.btn-outline-custom:hover{background:var(--primary-light)}
+
+/* ALERTS */
+.alert-custom{border-radius:var(--radius-sm);padding:12px 18px;font-size:.875rem;border:none;margin-bottom:16px}
+.alert-success-custom{background:#d1e7dd;color:#0a5c36}
+.alert-error-custom{background:#f8d7da;color:#842029}
+
+/* PAGE HEADER */
+.page-header{margin-bottom:24px}
+.page-header h2{font-size:1.4rem;font-weight:800;color:var(--text)}
+.page-header p{color:var(--muted);font-size:.875rem;margin-top:4px}
+
+/* MOBILE */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main-content{margin-left:0}
+  .content-area{padding:20px 16px}
+}
+</style>
+{% block extra_css %}{% endblock %}
+</head>
+<body>
+
+{% if user.is_authenticated %}
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    {% load static %}
+    <div class="logo-wrap">
+      <img src="{% static 'img/logo.png' %}" alt="DCS Logo">
+    </div>
+    <h4>Leave System</h4>
+    <small>Leave Management System</small>
+  </div>
+  <div class="sidebar-user">
+    <div class="avatar">{{ user.username|first|upper }}</div>
+    <div class="user-info">
+      <div class="user-name">{{ user.username }}</div>
+      <div class="user-role">{{ user.get_role_display }}</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    {% if user.role == 'HR' %}
+      <div class="nav-section-title">Main</div>
+      <a href="{% url 'hr_dashboard' %}" class="{% if request.resolver_match.url_name == 'hr_dashboard' %}active{% endif %}"><i class="fa fa-gauge"></i> Dashboard</a>
+      <div class="nav-section-title">Leave Tools</div>
+      <a href="{% url 'apply_leave' %}" class="{% if request.resolver_match.url_name == 'apply_leave' %}active{% endif %}"><i class="fa fa-paper-plane"></i> Apply Leave</a>
+      <a href="{% url 'my_leave_status' %}" class="{% if request.resolver_match.url_name == 'my_leave_status' %}active{% endif %}"><i class="fa fa-clock"></i> My Leave Status</a>
+      <a href="{% url 'my_leave_history' %}" class="{% if request.resolver_match.url_name == 'my_leave_history' %}active{% endif %}"><i class="fa fa-history"></i> My Leave History</a>
+      <a href="{% url 'leave_calendar' %}" class="{% if request.resolver_match.url_name == 'leave_calendar' %}active{% endif %}"><i class="fa fa-calendar"></i> Calendar</a>
+      <div class="nav-section-title">HR Tools</div>
+      <a href="{% url 'add_md' %}" class="{% if request.resolver_match.url_name == 'add_md' %}active{% endif %}"><i class="fa fa-user-tie"></i> Add MD</a>
+      <a href="{% url 'add_employee' %}" class="{% if request.resolver_match.url_name == 'add_employee' %}active{% endif %}"><i class="fa fa-user-plus"></i> Add Employee</a>
+      <a href="{% url 'list_employees' %}" class="{% if request.resolver_match.url_name == 'list_employees' %}active{% endif %}"><i class="fa fa-users"></i> All Employees</a>
+      <a href="{% url 'monthly_report' %}" class="{% if request.resolver_match.url_name == 'monthly_report' %}active{% endif %}"><i class="fa fa-chart-bar"></i> Monthly Report</a>
+      <a href="{% url 'hr_cancel_leave' %}" class="{% if request.resolver_match.url_name == 'hr_cancel_leave' %}active{% endif %}"><i class="fa fa-ban"></i> Cancel Leave</a>
+    {% elif user.role == 'DEPT_HEAD' %}
+      <div class="nav-section-title">Main</div>
+      <a href="{% url 'depthead_dashboard' %}" class="{% if request.resolver_match.url_name == 'depthead_dashboard' %}active{% endif %}"><i class="fa fa-gauge"></i> Dashboard</a>
+      <a href="{% url 'apply_leave' %}"><i class="fa fa-paper-plane"></i> Apply Leave</a>
+      <a href="{% url 'my_leave_status' %}"><i class="fa fa-clock"></i> My Leave Status</a>
+      <a href="{% url 'my_leave_history' %}"><i class="fa fa-history"></i> My Leave History</a>
+      <a href="{% url 'leave_calendar' %}"><i class="fa fa-calendar"></i> Calendar</a>
+      <div class="nav-section-title">Team</div>
+        <a href="{% url 'dept_team_list' %}" class="{% if request.resolver_match.url_name == 'dept_team_list' %}active{% endif %}"><i class="fa fa-sitemap"></i> My Department Team</a>
+      <div class="nav-section-title">Leave</div>
+    {% elif user.role == 'MD' %}
+      <div class="nav-section-title">Main</div>
+      <a href="{% url 'md_dashboard' %}" class="{% if request.resolver_match.url_name == 'md_dashboard' %}active{% endif %}"><i class="fa fa-gauge"></i> Dashboard</a>
+      <a href="{% url 'leave_calendar' %}" class="{% if request.resolver_match.url_name == 'leave_calendar' %}active{% endif %}"><i class="fa fa-calendar"></i> Calendar</a>
+      <div class="nav-section-title">Employees</div>
+      <a href="{% url 'md_all_employees' %}" class="{% if request.resolver_match.url_name == 'md_all_employees' %}active{% endif %}"><i class="fa fa-users"></i> All Employees</a>
+    {% else %}
+      <div class="nav-section-title">Main</div>
+      <a href="{% url 'employee_dashboard' %}" class="{% if request.resolver_match.url_name == 'employee_dashboard' %}active{% endif %}"><i class="fa fa-gauge"></i> Dashboard</a>
+      <div class="nav-section-title">Leave</div>
+      <a href="{% url 'apply_leave' %}"><i class="fa fa-paper-plane"></i> Apply Leave</a>
+      <a href="{% url 'my_leave_status' %}"><i class="fa fa-clock"></i> My Leave Status</a>
+      <a href="{% url 'my_leave_history' %}"><i class="fa fa-history"></i> My Leave History</a>
+      <a href="{% url 'leave_calendar' %}"><i class="fa fa-calendar"></i> Calendar</a>
+    {% endif %}
+  </nav>
+  <div class="sidebar-bottom">
+    <a href="{% url 'change_password' %}"><i class="fa fa-key"></i> Change Password</a>
+    <a href="{% url 'logout' %}"><i class="fa fa-sign-out-alt"></i> Logout</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-content">
+  <div class="topbar">
+    <div class="topbar-title">{% block page_title %}Dashboard{% endblock %}</div>
+    <div class="topbar-right">
+      {% if user.role == 'HR' or user.role == 'DEPT_HEAD' or user.role == 'MD' %}
+      <div style="position:relative;display:inline-block">
+        <button class="btn-icon" onclick="toggleNotifPanel()" title="Notifications" id="notifBtn">
+          <i class="fa fa-bell"></i>
+        </button>
+        {% if notif_count and notif_count > 0 %}
+        <span style="position:absolute;top:-5px;right:-5px;background:var(--accent);color:#fff;border-radius:50%;width:18px;height:18px;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center">{{ notif_count }}</span>
+        {% endif %}
+      </div>
+      {% endif %}
+      <span style="font-size:.8rem;color:var(--muted);background:var(--primary-light);padding:4px 10px;border-radius:20px;font-weight:600">{{ user.get_role_display }}</span>
+      <a href="{% url 'change_password' %}" class="btn-icon" title="Change Password"><i class="fa fa-key"></i></a>
+      <a href="{% url 'logout' %}" class="btn-icon" title="Logout"><i class="fa fa-sign-out-alt"></i></a>
+    </div>
+    <!-- Notification Panel -->
+    <div id="notifPanel" style="display:none;position:fixed;top:70px;right:20px;width:340px;background:#fff;border-radius:var(--radius);box-shadow:0 8px 32px rgba(0,0,0,.15);border:1px solid var(--border);z-index:999;max-height:400px;overflow-y:auto">
+      <div style="padding:14px 18px;border-bottom:1px solid var(--border);font-weight:700;font-size:.9rem;display:flex;justify-content:space-between;align-items:center">
+        <span><i class="fa fa-bell" style="color:var(--primary)"></i> Pending Approvals</span>
+        <span onclick="toggleNotifPanel()" style="cursor:pointer;color:var(--muted)"><i class="fa fa-xmark"></i></span>
+      </div>
+      {% if notif_leaves %}
+        {% for nl in notif_leaves %}
+        <div style="padding:12px 18px;border-bottom:1px solid var(--border);font-size:.82rem">
+          <strong>{{ nl.employee.emp_name }}</strong> <span style="color:var(--muted)">({{ nl.employee.emp_code }})</span><br>
+          <span class="badge-status badge-{{ nl.leave_type|lower }}">{{ nl.get_leave_type_display }}</span>
+          <span style="color:var(--muted);margin-left:6px">{{ nl.date_from|date:"d M" }} – {{ nl.date_to|date:"d M Y" }} · {{ nl.total_days }} day{{ nl.total_days|pluralize }}</span>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div style="padding:24px;text-align:center;color:var(--muted)"><i class="fa fa-check-circle" style="color:var(--accent3)"></i> No pending approvals</div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="content-area">
+    {% for message in messages %}
+      <div class="alert-custom {% if message.tags == 'error' %}alert-error-custom{% else %}alert-success-custom{% endif %}" style="display:flex;align-items:center;gap:10px">
+        <i class="fa {% if message.tags == 'error' %}fa-circle-xmark{% else %}fa-circle-check{% endif %}"></i>
+        {{ message }}
+      </div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </div>
+</div>
+{% else %}
+  {% block auth_content %}{% endblock %}
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function toggleNotifPanel(){
+  var p=document.getElementById('notifPanel');
+  if(p) p.style.display = p.style.display==='none' ? 'block' : 'none';
+}
+document.addEventListener('click',function(e){
+  var p=document.getElementById('notifPanel');
+  var b=document.getElementById('notifBtn');
+  if(p && b && !p.contains(e.target) && !b.contains(e.target)) p.style.display='none';
+});
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

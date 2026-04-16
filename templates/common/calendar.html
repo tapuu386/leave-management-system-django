@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block page_title %}Leave Calendar{% endblock %}
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+<style>
+#calendar{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.fc-toolbar-title{font-size:1.1rem!important;font-weight:700!important;color:var(--text)!important}
+.fc-button-primary{background:var(--primary)!important;border-color:var(--primary)!important;border-radius:8px!important;font-size:.82rem!important}
+.fc-daygrid-event{border-radius:6px!important;padding:2px 6px!important;font-size:.75rem!important;font-weight:600!important}
+</style>
+{% endblock %}
+{% block content %}
+<div class="page-header"><h2>📅 Leave Calendar</h2><p>Visual overview of approved leaves</p></div>
+<div id="calendar"></div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const cal = new FullCalendar.Calendar(document.getElementById('calendar'), {
+    initialView: 'dayGridMonth',
+    headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,listMonth' },
+    events: {{ events|safe }},
+    eventDidMount: function(info) {
+      info.el.title = info.event.title;
+    }
+  });
+  cal.render();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block page_title %}My Dashboard{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h2>👋 Welcome, {{ emp.emp_name }}</h2>
+  <p>{{ emp.designation }} &nbsp;·&nbsp; {{ emp.department|default:"No Department" }}</p>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#ede9ff;color:#6C47FF"><i class="fa fa-paper-plane"></i></div>
+      <div class="stat-num">{{ pending }}</div>
+      <div class="stat-label">Pending Leaves</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#e8f5e9;color:#388e3c"><i class="fa fa-check-circle"></i></div>
+      <div class="stat-num">{{ approved }}</div>
+      <div class="stat-label">Approved This Year</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:{% if on_leave_today %}#fce4ec{% else %}#e8f5e9{% endif %};color:{% if on_leave_today %}#e91e63{% else %}#388e3c{% endif %}">
+        <i class="fa fa-{% if on_leave_today %}plane-departure{% else %}briefcase{% endif %}"></i>
+      </div>
+      <div class="stat-num" style="font-size:1.2rem;padding-top:8px">{% if on_leave_today %}On Leave{% else %}Present{% endif %}</div>
+      <div class="stat-label">Today's Status</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card" style="cursor:pointer" onclick="location.href='{% url 'apply_leave' %}'">
+      <div class="stat-icon" style="background:#fff8e1;color:#f57f17"><i class="fa fa-plus-circle"></i></div>
+      <div class="stat-num" style="font-size:1.1rem;padding-top:8px">Apply</div>
+      <div class="stat-label">New Leave Request</div>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header"><i class="fa fa-history" style="color:var(--primary)"></i> Recent Leave Applications</div>
+  <div class="card-body p-0">
+    {% if recent %}
+    <table class="table-clean">
+      <thead><tr><th>Leave Type</th><th>From</th><th>To</th><th>Days</th><th>Status</th><th>Applied On</th></tr></thead>
+      <tbody>
+      {% for l in recent %}
+      <tr>
+        <td><span class="badge-status badge-{{ l.leave_type|lower }}">{{ l.get_leave_type_display }}</span></td>
+        <td>{{ l.date_from|date:"d M Y" }}</td>
+        <td>{{ l.date_to|date:"d M Y" }}</td>
+        <td>{{ l.total_days }}</td>
+        <td><span class="badge-status badge-{{ l.status|lower }}">{{ l.status }}</span></td>
+        <td>{{ l.applied_on|date:"d M Y, h:i A" }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div style="padding:40px;text-align:center;color:var(--muted)">No leave applications yet. <a href="{% url 'apply_leave' %}" style="color:var(--primary)">Apply now</a></div>
+    {% endif %}
+  </div>
+</div>
+
+{% if manager_pending_leaves %}
+<div class="card">
+  <div class="card-header">
+    <i class="fa fa-users-between-lines" style="color:var(--primary)"></i>
+    Team Leave Requests
+    <span style="margin-left:auto;background:var(--accent);color:#fff;border-radius:20px;padding:3px 12px;font-size:.72rem;font-weight:700">{{ manager_pending_leaves|length }} Pending</span>
+  </div>
+  <div class="card-body p-0">
+    <table class="table-clean" style="width:100%">
+      <thead><tr>
+        <th>Employee</th><th>Leave Type</th><th>From</th><th>To</th><th>Days</th><th>Purpose</th><th>Action</th>
+      </tr></thead>
+      <tbody>
+      {% for leave in manager_pending_leaves %}
+      <tr>
+        <td>
+          <strong>{{ leave.employee.emp_name }}</strong><br>
+          <small style="color:var(--muted)">{{ leave.employee.emp_code }} &nbsp;·&nbsp; {{ leave.employee.department|default:"—" }}</small>
+        </td>
+        <td><span class="badge-status badge-{{ leave.leave_type|lower }}">{{ leave.get_leave_type_display }}</span></td>
+        <td>{{ leave.date_from|date:"d M Y" }}</td>
+        <td>{{ leave.date_to|date:"d M Y" }}</td>
+        <td><strong>{{ leave.total_days }}</strong></td>
+        <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="{{ leave.purpose }}">{{ leave.purpose }}</td>
+        <td style="white-space:nowrap">
+          <form method="post" action="{% url 'approve_reject_leave' leave.id %}" style="display:inline">
+            {% csrf_token %}<input type="hidden" name="action" value="APPROVED">
+            <button type="submit" class="btn-success-custom">✓ Approve</button>
+          </form>
+          <form method="post" action="{% url 'approve_reject_leave' leave.id %}" style="display:inline;margin-left:4px">
+            {% csrf_token %}<input type="hidden" name="action" value="REJECTED">
+            <button type="submit" class="btn-danger-custom">✗ Reject</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
